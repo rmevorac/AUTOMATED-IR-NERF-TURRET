@@ -15,7 +15,12 @@ Vendor: Amazon
 Model: Nerf Ultra Select
 https://www.amazon.com/NERF-F0958-NER-Ultra-Select/dp/B08SYD2685?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=ATVPDKIKX0DER 
 
-Data sheet: https://icecat.biz/p/nerf/f0958u50/ultra-toy+weapons-5010993855285-select-89523906.html
+Data sheet for Nerf Gun: https://icecat.biz/p/nerf/f0958u50/ultra-toy+weapons-5010993855285-select-89523906.html
+
+Data sheet for Adafruit MLX90640 IR Thermal Camera: https://learn.adafruit.com/adafruit-mlx90640-ir-thermal-camera/downloads
 
 Trigger System:
 Electronic Trigger System
+
+
+
