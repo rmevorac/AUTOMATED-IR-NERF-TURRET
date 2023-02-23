@@ -7,7 +7,7 @@ from mlx90640.image import ChessPattern, InterleavedPattern
 from mma8451.mma845x import *
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     
     ## The creation of the motor 1 object
     motor1 = MotorDriver(Pin.board.PC1, Pin.board.PA0, Pin.board.PA1, 5)
