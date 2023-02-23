@@ -232,7 +232,8 @@ if __name__ == "__main__":
                 for line in camera.get_csv(image.v_ir, limits=(0, 99)):
                     print(line)
             else:
-                camera.ascii_art(image.v_ir)
+                camera.ascii_image(image.v_ir)
+                #camera.ascii_art(image.v_ir)
             time.sleep_ms(10000)
 
         except KeyboardInterrupt:
