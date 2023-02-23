@@ -23,4 +23,8 @@ Trigger System:
 Electronic Trigger System
 
 
+Total Cost:
+Nerf Ultra Select Gun - $51
+
+
 
