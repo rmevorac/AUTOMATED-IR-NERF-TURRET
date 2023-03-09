@@ -11,9 +11,9 @@ from mma8451.mma845x import MMA845x
 
 from task.cotask import cotask
 from task.task_share import task_share
-from motor_driver.encoder_reader import Encoder
-from motor_driver.motor_driver import MotorDriver
-from motor_driver.controller import Controller
+from motor.encoder_reader import Encoder
+from motor.motor_driver import MotorDriver
+from motor.controller import Controller
 
 def get_params():
     '''!
