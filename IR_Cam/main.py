@@ -21,9 +21,9 @@ example.
 
 import utime as time
 from machine import Pin, I2C
-from mlx90640-IR import MLX90640
-from mlx90640-IR.calibration import NUM_ROWS, NUM_COLS, IMAGE_SIZE, TEMP_K
-from mlx90640-IR.image import ChessPattern, InterleavedPattern
+from mlx90640 import MLX90640
+from mlx90640.calibration import NUM_ROWS, NUM_COLS, IMAGE_SIZE, TEMP_K
+from mlx90640.image import ChessPattern, InterleavedPattern
 
 
 class MLX_Cam:

@@ -7,7 +7,7 @@ from pyb import Pin as Pin
 from mlx90640 import MLX90640
 from mlx90640.calibration import NUM_ROWS, NUM_COLS, IMAGE_SIZE, TEMP_K
 from mlx90640.image import ChessPattern, InterleavedPattern
-from mma8451.mma845x import *
+from mma8451.mma845x import MMA845x
 
 from task.cotask import cotask
 from task.task_share import task_share
@@ -15,7 +15,59 @@ from motor_driver.encoder_reader import Encoder
 from motor_driver.motor_driver import MotorDriver
 from motor_driver.controller import Controller
 
-def get_accel(shares):
+def move_motor_1(shares):
+    """!
+    @brief      This function executes task1 by continuously checking if the controller1 has new data and,
+                if so, writing it to the u2 share.
+    @details    The function takes in a tuple of two shares, one for the `my_share` and one for the `my_queue`.
+                It then enters a while loop that runs indefinitely, checking if the `controller1.run()` method
+                returns `True` and, if so, writing the first and second elements of `controller1.motor_data`
+                to the `u2` share. If a KeyboardInterrupt is raised, the motor is shut off and the loop is broken.
+                The function yields control after each iteration of the loop.
+    @param      shares A tuple of two shares, one for `my_share` and one for `my_queue`.
+    @return     None
+    """
+    # Get references to the share and queue which have been passed to this task
+    my_share, my_queue = shares
+
+    while 1:
+        try:
+            controller1.run()
+
+        except KeyboardInterrupt:
+            motor1.set_duty_cycle(0)
+            print("motor 1 shut off")
+            break
+
+        yield
+
+def move_motor_2(shares):
+    """!
+    @brief      This function executes task2 by continuously checking if the controller2 has new data and,
+                if so, writing it to the u2 share.
+    @details    The function takes in a tuple of two shares, one for the `my_share` and one for the `my_queue`.
+                It then enters a while loop that runs indefinitely, checking if the `controller2.run()` method
+                returns `True` and, if so, writing the first and second elements of `controller2.motor_data`
+                to the `u2` share. If a KeyboardInterrupt is raised, the motor is shut off and the loop is broken.
+                The function yields control after each iteration of the loop.
+    @param      shares A tuple of two shares, one for `my_share` and one for `my_queue`.
+    @return     None
+    """
+    # Get references to the share and queue which have been passed to this task
+    my_share, my_queue = shares
+
+    while 1:
+        try:
+            controller2.run()
+
+        except KeyboardInterrupt:
+            motor2.set_duty_cycle(0)
+            print("motor 2 shut off")
+            break
+
+        yield
+
+def do_calculations(shares):
     """!
     Task that gets x, y, and z acceleration from the accelerometer
     @param shares A list holding the share and queue used by this task
@@ -23,14 +75,17 @@ def get_accel(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
-    mma.active()
-    while True:
-        x,y,z= mma.get_accels()
-        my_queue.put(x)
-        my_queue.put(y)
-        my_queue.put(z)
 
-        yield 0
+def fire_round(shares):
+    """!
+    Task that gets x, y, and z acceleration from the accelerometer
+    @param shares A list holding the share and queue used by this task
+    """
+    # Get references to the share and queue which have been passed to this task
+    my_share, my_queue = shares
+
+
+
 
 if __name__ == "__main__":
     ## Set kp and setpoints for controller
@@ -66,9 +121,9 @@ if __name__ == "__main__":
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-    task1 = cotask.Task(get_accel, name="Task_1", priority=2, period=500,
+    task1 = cotask.Task(move_motor_1, name="Task_1", priority=2, period=500,
                         profile=True, trace=False, shares=(share0, q0))
-    task2 = cotask.Task(task2_fun, name="Task_2", priority=1, period=500,
+    task2 = cotask.Task(move_motor_2, name="Task_2", priority=1, period=500,
                         profile=True, trace=False, shares=(share0, q0))
     cotask.task_list.append(task1)
     cotask.task_list.append(task2)
