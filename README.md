@@ -27,4 +27,10 @@ Total Cost:
 Nerf Ultra Select Gun - $51
 
 
+Task Diagram:
+![TDV1](https://user-images.githubusercontent.com/56085595/222069197-0ed7baf2-8def-4cf4-a6a4-fca194ef7bc9.jpg)
+
+FSM:
+![FSMV1](https://user-images.githubusercontent.com/56085595/222069215-9171dbce-964f-4f7f-9de4-17c2358491e7.jpg)
+
 
