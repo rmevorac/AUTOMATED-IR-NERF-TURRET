@@ -9,8 +9,8 @@ from mlx90640.calibration import NUM_ROWS, NUM_COLS, IMAGE_SIZE, TEMP_K
 from mlx90640.image import ChessPattern, InterleavedPattern
 from mma8451.mma845x import MMA845x
 
-from task.cotask import cotask
-from task.task_share import task_share
+import task.cotask as cotask
+import task.task_share as task_share
 from motor.encoder_reader import Encoder
 from motor.motor_driver import MotorDriver
 from motor.controller import Controller
@@ -34,7 +34,7 @@ def get_params():
         except ValueError:
             print("Please enter a valid input")
 
-def move_motor_1(shares):
+def move_pitch_motor(shares):
     """!
     @brief      This function executes task1 by continuously checking if the controller1 has new data and,
                 if so, writing it to the u2 share.
@@ -50,17 +50,18 @@ def move_motor_1(shares):
     my_share, my_queue = shares
 
     while 1:
-        try:
-            controller1.run()
-
-        except KeyboardInterrupt:
-            motor1.set_duty_cycle(0)
-            print("motor 1 shut off")
-            break
-
+        controller1.run()
+        
+        ticks_left = controller1.motor_data[1] - params1[1] # change to sp1
+        
+        if abs(ticks_left) < 50:
+            while 1:
+                motor1.set_duty_cycle(70)
+                print("fire")
+                yield
         yield
 
-def move_motor_2(shares):
+def move_yaw_motor(shares):
     """!
     @brief      This function executes task2 by continuously checking if the controller2 has new data and,
                 if so, writing it to the u2 share.
@@ -76,14 +77,7 @@ def move_motor_2(shares):
     my_share, my_queue = shares
 
     while 1:
-        try:
-            controller2.run()
-
-        except KeyboardInterrupt:
-            motor2.set_duty_cycle(0)
-            print("motor 2 shut off")
-            break
-
+        controller2.run()       
         yield
 
 def do_calculations(shares):
@@ -108,13 +102,13 @@ def fire_round(shares):
 
 if __name__ == "__main__":
     ## Set kp and setpoints for controller
-    # kp1, kp2, sp1, sp2 = .01, .01, 1000, 1000
+    # kp1, sp1, kp2, sp2 = 5, 16000, 1.5, 27000
 
     ## Prompting user for KP and setpoint for controller1
     params1 = get_params()
     
     ## Prompting user for KP and setpoint for controller2
-    params2 = get_params()
+    #params2 = get_params()
 
     ## Create a share and a queue to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
@@ -122,7 +116,7 @@ if __name__ == "__main__":
                           name="Queue 0")
 
     ## Create accelerometer object with 
-    mma = MMA845x(pyb.I2C(1, pyb.I2C.MASTER, baudrate = 100000), 29)
+    #mma = MMA845x(pyb.I2C(1, pyb.I2C.MASTER, baudrate = 100000), 29)
 
     ## The creation of the motor 1 object
     motor1 = MotorDriver(Pin.board.PC1, Pin.board.PA0, Pin.board.PA1, 5)
@@ -131,27 +125,27 @@ if __name__ == "__main__":
     motor2 = MotorDriver(Pin.board.PA10, Pin.board.PB4, Pin.board.PB5, 3)
 
     ## The creation of the encoder 1 object
-    encoder1 = Encoder(Pin.board.PB6, Pin.board.PB7, 4)
-
+    encoder1 = Encoder(Pin.board.PC6, Pin.board.PC7, 8)
+    
     ## The creation of the encoder 2 object
-    encoder2 = Encoder(Pin.board.PC6, Pin.board.PC7, 8)
+    encoder2 = Encoder(Pin.board.PB6, Pin.board.PB7, 4)
 
     ## Once motor, encoder and params are collected they are used to create this controller 1 object
     controller1 = Controller(params1[0], params1[1], motor1, encoder1)
 
     ## Once motor, encoder and params are collected they are used to create this controller 2 object
-    controller2 = Controller(params2[0], params2[1], motor2, encoder2)
+    #controller2 = Controller(params2[0], params2[1], motor2, encoder2)
 
     # Create the tasks. If trace is enabled for any task, memory will be
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-    task1 = cotask.Task(move_motor_1, name="Task_1", priority=2, period=500,
+    task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=1, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task2 = cotask.Task(move_motor_2, name="Task_2", priority=1, period=500,
+    task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
     cotask.task_list.append(task1)
-    cotask.task_list.append(task2)
+    #cotask.task_list.append(task2)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
@@ -162,6 +156,10 @@ if __name__ == "__main__":
         try:
             cotask.task_list.pri_sched()
         except KeyboardInterrupt:
+            motor1.set_duty_cycle(0)
+            print("motor 1 shut off")
+            motor2.set_duty_cycle(0)
+            print("motor 2 shut off")
             break
 
     # Print a table of task data and a table of shared information data
@@ -174,25 +172,25 @@ if __name__ == "__main__":
 
 
 
-    # The following import is only used to check if we have an STM32 board such
-    # as a Pyboard or Nucleo; if not, use a different library
-    try:
-        from pyb import info
-
-    # Oops, it's not an STM32; assume generic machine.I2C for ESP32 and others
-    except ImportError:
-        # For ESP32 38-pin cheapo board from NodeMCU, KeeYees, etc.
-        i2c_bus = I2C(1, scl=Pin(22), sda=Pin(21))
-
-    # OK, we do have an STM32, so just use the default pin assignments for I2C1
-    else:
-        i2c_bus = I2C(1)
-
-    # Select MLX90640 camera I2C address, normally 0x33, and check the bus
-    i2c_address = 0x33
-    scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
-    print(f"I2C Scan: {scanhex}")
-
-    ## Create the camera object and set it up in default mode
-    camera = MLX_Cam(i2c_bus)
+#     # The following import is only used to check if we have an STM32 board such
+#     # as a Pyboard or Nucleo; if not, use a different library
+#     try:
+#         from pyb import info
+# 
+#     # Oops, it's not an STM32; assume generic machine.I2C for ESP32 and others
+#     except ImportError:
+#         # For ESP32 38-pin cheapo board from NodeMCU, KeeYees, etc.
+#         i2c_bus = I2C(1, scl=Pin(22), sda=Pin(21))
+# 
+#     # OK, we do have an STM32, so just use the default pin assignments for I2C1
+#     else:
+#         i2c_bus = I2C(1)
+# 
+#     # Select MLX90640 camera I2C address, normally 0x33, and check the bus
+#     i2c_address = 0x33
+#     scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
+#     print(f"I2C Scan: {scanhex}")
+# 
+#     ## Create the camera object and set it up in default mode
+#     camera = MLX_Cam(i2c_bus)
 
