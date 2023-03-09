@@ -17,8 +17,8 @@
 """
 import pyb, utime
 from pyb import Pin as Pin
-from encoder_reader import Encoder
-from motor_driver import MotorDriver
+from motor.encoder_reader import Encoder
+from motor.motor_driver import MotorDriver
 
 
 class Controller:
