@@ -15,6 +15,25 @@ from motor_driver.encoder_reader import Encoder
 from motor_driver.motor_driver import MotorDriver
 from motor_driver.controller import Controller
 
+def get_params():
+    '''!
+    @brief      Prompts the user to enter KP and setpoint values.
+    @details    This function prompts the user for two values, the KP and setpoint,
+                which are used to control the motor. It repeatedly prompts the user
+                until valid input is entered.
+    @param      None
+    @return     Tuple of strings, containing the KP and setpoint values.
+    '''
+    while True:
+        try:
+            ## Stores the KP value send from the decoder PC
+            kp = float(input("Enter a KP: "))
+            ## Stores the setpoint value send from the decoder PC
+            setpoint = int(input("Enter a setpoint: "))
+            return (kp, setpoint)
+        except ValueError:
+            print("Please enter a valid input")
+
 def move_motor_1(shares):
     """!
     @brief      This function executes task1 by continuously checking if the controller1 has new data and,
@@ -89,7 +108,13 @@ def fire_round(shares):
 
 if __name__ == "__main__":
     ## Set kp and setpoints for controller
-    kp1, kp2, sp1, sp2 = .01, .01, 1000, 1000
+    # kp1, kp2, sp1, sp2 = .01, .01, 1000, 1000
+
+    ## Prompting user for KP and setpoint for controller1
+    params1 = get_params()
+    
+    ## Prompting user for KP and setpoint for controller2
+    params2 = get_params()
 
     ## Create a share and a queue to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
@@ -112,10 +137,10 @@ if __name__ == "__main__":
     encoder2 = Encoder(Pin.board.PC6, Pin.board.PC7, 8)
 
     ## Once motor, encoder and params are collected they are used to create this controller 1 object
-    controller1 = Controller(kp1, sp1, motor1, encoder1)
+    controller1 = Controller(params1[0], params1[1], motor1, encoder1)
 
     ## Once motor, encoder and params are collected they are used to create this controller 2 object
-    controller2 = Controller(kp2, sp2, motor2, encoder2)
+    controller2 = Controller(params2[0], params2[1], motor2, encoder2)
 
     # Create the tasks. If trace is enabled for any task, memory will be
     # allocated for state transition tracing, and the application will run out
