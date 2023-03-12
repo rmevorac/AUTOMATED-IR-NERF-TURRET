@@ -1,19 +1,15 @@
 import pyb
 import gc
 import utime as time
-from pyb import Pin as Pin
+from machine import Pin, I2C
 #from machine import Pin, I2C
-
-from mlx90640 import MLX90640
-from mlx90640.calibration import NUM_ROWS, NUM_COLS, IMAGE_SIZE, TEMP_K
-from mlx90640.image import ChessPattern, InterleavedPattern
-from mma8451.mma845x import MMA845x
 
 import task.cotask as cotask
 import task.task_share as task_share
 from motor.encoder_reader import Encoder
 from motor.motor_driver import MotorDriver
 from motor.controller import Controller
+from mlx90640.mlx_cam import MLX_Cam
 
 def get_params():
     '''!
