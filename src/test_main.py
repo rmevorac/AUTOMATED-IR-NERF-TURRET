@@ -80,6 +80,16 @@ def move_yaw_motor(shares):
         controller2.run()       
         yield
 
+def find_hotspot(shares):
+    """!
+    Task that gets x, y, and z acceleration from the accelerometer
+    @param shares A list holding the share and queue used by this task
+    """
+    # Get references to the share and queue which have been passed to this task
+    my_share, my_queue = shares
+
+    
+
 def do_calculations(shares):
     """!
     Task that gets x, y, and z acceleration from the accelerometer
@@ -99,13 +109,12 @@ def fire_round(shares):
 
 
 
-
 if __name__ == "__main__":
     ## Set kp and setpoints for controller
     # kp1, sp1, kp2, sp2 = 5, 16000, 1.5, 27000
 
     ## Prompting user for KP and setpoint for controller1
-    params1 = get_params()
+    #params1 = get_params()
     
     ## Prompting user for KP and setpoint for controller2
     #params2 = get_params()
@@ -114,9 +123,28 @@ if __name__ == "__main__":
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
     q0 = task_share.Queue('h', 16, thread_protect=False, overwrite=False,
                           name="Queue 0")
+    
+    # The following import is only used to check if we have an STM32 board such
+    # as a Pyboard or Nucleo; if not, use a different library
+    try:
+        from pyb import info
 
-    ## Create accelerometer object with 
-    #mma = MMA845x(pyb.I2C(1, pyb.I2C.MASTER, baudrate = 100000), 29)
+    # Oops, it's not an STM32; assume generic machine.I2C for ESP32 and others
+    except ImportError:
+        # For ESP32 38-pin cheapo board from NodeMCU, KeeYees, etc.
+        i2c_bus = I2C(1, scl=Pin(22), sda=Pin(21))
+
+    # OK, we do have an STM32, so just use the default pin assignments for I2C1
+    else:
+        i2c_bus = I2C(1)
+
+    ## Select MLX90640 camera I2C address, normally 0x33, and check the bus
+    i2c_address = 0x33
+    scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
+    print(f"I2C Scan: {scanhex}")
+
+    ## Create the camera object and set it up in default mode
+    camera = MLX_Cam(i2c_bus)
 
     ## The creation of the motor 1 object
     motor1 = MotorDriver(Pin.board.PC1, Pin.board.PA0, Pin.board.PA1, 5)
@@ -140,12 +168,18 @@ if __name__ == "__main__":
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-    task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=1, period=50,
+    #task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=1, period=50,
+    #                    profile=True, trace=False, shares=(share0, q0))
+    #task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
+    #                    profile=True, trace=False, shares=(share0, q0))
+    task3 = cotask.Task(find_hotspot, name="Task_3", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
+    task4 = cotask.Task(do_calculations, name="Task_3", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    cotask.task_list.append(task1)
+    #cotask.task_list.append(task1)
     #cotask.task_list.append(task2)
+    cotask.task_list.append(task3)
+    cotask.task_list.append(task4)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
@@ -167,30 +201,3 @@ if __name__ == "__main__":
     print(task_share.show_all())
     print(task1.get_trace())
     print('')
-
-
-
-
-
-#     # The following import is only used to check if we have an STM32 board such
-#     # as a Pyboard or Nucleo; if not, use a different library
-#     try:
-#         from pyb import info
-# 
-#     # Oops, it's not an STM32; assume generic machine.I2C for ESP32 and others
-#     except ImportError:
-#         # For ESP32 38-pin cheapo board from NodeMCU, KeeYees, etc.
-#         i2c_bus = I2C(1, scl=Pin(22), sda=Pin(21))
-# 
-#     # OK, we do have an STM32, so just use the default pin assignments for I2C1
-#     else:
-#         i2c_bus = I2C(1)
-# 
-#     # Select MLX90640 camera I2C address, normally 0x33, and check the bus
-#     i2c_address = 0x33
-#     scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
-#     print(f"I2C Scan: {scanhex}")
-# 
-#     ## Create the camera object and set it up in default mode
-#     camera = MLX_Cam(i2c_bus)
-
