@@ -2,7 +2,6 @@ import pyb
 import gc
 import utime as time
 from machine import Pin, I2C
-#from machine import Pin, I2C
 
 import task.cotask as cotask
 import task.task_share as task_share
@@ -11,24 +10,8 @@ from motor.motor_driver import MotorDriver
 from motor.controller import Controller
 from mlx90640.mlx_cam import MLX_Cam
 
-def get_params():
-    '''!
-    @brief      Prompts the user to enter KP and setpoint values.
-    @details    This function prompts the user for two values, the KP and setpoint,
-                which are used to control the motor. It repeatedly prompts the user
-                until valid input is entered.
-    @param      None
-    @return     Tuple of strings, containing the KP and setpoint values.
-    '''
-    while True:
-        try:
-            ## Stores the KP value send from the decoder PC
-            kp = float(input("Enter a KP: "))
-            ## Stores the setpoint value send from the decoder PC
-            setpoint = int(input("Enter a setpoint: "))
-            return (kp, setpoint)
-        except ValueError:
-            print("Please enter a valid input")
+NUM_PIXELS_COL = 32
+NUM_PIXELS_ROW = 24
 
 def move_pitch_motor(shares):
     """!
@@ -47,14 +30,6 @@ def move_pitch_motor(shares):
 
     while 1:
         controller1.run()
-        
-        ticks_left = controller1.motor_data[1] - params1[1] # change to sp1
-        
-        if abs(ticks_left) < 50:
-            while 1:
-                motor1.set_duty_cycle(70)
-                print("fire")
-                yield
         yield
 
 def move_yaw_motor(shares):
@@ -83,8 +58,31 @@ def find_hotspot(shares):
     """
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
+    max_val, max_row, max_col = 0, 0, 0
+    row, col = 1, 1
 
-    
+    image = camera.get_image()
+    pix = camera.get_csv(image.pix, limits=(0, 99))
+    next(pix)
+#     print(f"MAX: {max_val}")
+
+    while row < (NUM_PIXELS_ROW - 2):
+#         print(f"MAX: {max_val}") 
+        line = next(pix).split(",")
+#         print(line)
+        while col < (NUM_PIXELS_COL - 1):
+            if int(line[col]) > max_val:
+                avg = (int(line[col - 1]) + int(line[col]) + int(line[col + 1])) / 3
+                if avg > max_val:
+                    print(f"updated at {row}, {col} to value {avg}")
+                    max_val = avg
+                    max_row = row
+                    max_col = col
+            col += 1
+        row += 1
+        col = 1
+        #print(f"val: {max_val}, row: {max_row}, col: {max_col}")   
+    yield
 
 def do_calculations(shares):
     """!
@@ -104,16 +102,9 @@ def fire_round(shares):
     my_share, my_queue = shares
 
 
-
 if __name__ == "__main__":
     ## Set kp and setpoints for controller
-    # kp1, sp1, kp2, sp2 = 5, 16000, 1.5, 27000
-
-    ## Prompting user for KP and setpoint for controller1
-    #params1 = get_params()
-    
-    ## Prompting user for KP and setpoint for controller2
-    #params2 = get_params()
+    kp1, sp1, kp2, sp2 = 1, -100000, 1, -5000
 
     ## Create a share and a queue to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
@@ -154,28 +145,28 @@ if __name__ == "__main__":
     ## The creation of the encoder 2 object
     encoder2 = Encoder(Pin.board.PB6, Pin.board.PB7, 4)
 
-    ## Once motor, encoder and params are collected they are used to create this controller 1 object
-    controller1 = Controller(params1[0], params1[1], motor1, encoder1)
+    ## Once motor, encoder and params are collected they are used to create this controller 1 object (pitch)
+    controller1 = Controller(kp1, sp1, motor1, encoder1)
 
-    ## Once motor, encoder and params are collected they are used to create this controller 2 object
-    #controller2 = Controller(params2[0], params2[1], motor2, encoder2)
+    ## Once motor, encoder and params are collected they are used to create this controller 2 object (yaw)
+    controller2 = Controller(kp2, sp2, motor2, encoder2)
 
     # Create the tasks. If trace is enabled for any task, memory will be
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-    #task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=1, period=50,
-    #                    profile=True, trace=False, shares=(share0, q0))
-    #task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
-    #                    profile=True, trace=False, shares=(share0, q0))
+    task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=1, period=50,
+                        profile=True, trace=False, shares=(share0, q0))
+    task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
+                        profile=True, trace=False, shares=(share0, q0))
     task3 = cotask.Task(find_hotspot, name="Task_3", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
     task4 = cotask.Task(do_calculations, name="Task_3", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    #cotask.task_list.append(task1)
-    #cotask.task_list.append(task2)
-    cotask.task_list.append(task3)
-    cotask.task_list.append(task4)
+    cotask.task_list.append(task1)
+    cotask.task_list.append(task2)
+    #cotask.task_list.append(task3)
+    #cotask.task_list.append(task4)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
