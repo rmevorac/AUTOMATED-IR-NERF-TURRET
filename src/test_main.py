@@ -2,6 +2,7 @@ import pyb
 import gc
 import utime as time
 from machine import Pin, I2C
+from math import atan, pi
 
 import task.cotask as cotask
 import task.task_share as task_share
@@ -28,20 +29,20 @@ def move_pitch_motor(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
-    match my_share.get():
-        case 3: # MOVE STATE (S1)
+    while 1:
+        if my_share.get() == 3: # MOVE STATE (S1)
             while 1:
                 controller1.run()
 
                 if controller1.encoder.position in\
-                 range(controller1.encoder.setpoint - 250, controller1.encoder.setpoint + 250):
+                 range(controller1.setpoint - 250, controller1.setpoint + 250):
                     motor1_flag = 1
                     if motor2_flag:
                         my_share.put(4)
-                        break
                 yield
-        case _: # IDLE STATE (S0)
-            pass
+            yield
+        else: # IDLE STATE (S0)
+            yield
 
 def move_yaw_motor(shares):
     """!
@@ -57,32 +58,39 @@ def move_yaw_motor(shares):
     """
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
+    turn_flag = 1
 
-    match my_share.get():
-        case 3: # MOVE STATE (S1)
+    while 1:
+        if my_share.get() == 3: # MOVE STATE (S1)
             while 1:
                 controller2.run()
 
                 if controller1.encoder.position in\
-                 range(controller1.encoder.setpoint - 250, controller1.encoder.setpoint + 250):
+                 range(controller1.setpoint - 250, controller1.setpoint + 250):        
                     motor2_flag = 1
                     if motor1_flag:
                         my_share.put(4)
-                        break
+                        
                 yield
-        case 1: # 180 TURN STATE (S2)
+            yield
+        elif my_share.get() == 1: # 180 TURN STATE (S2)
             while 1:
                 controller2.run()
-
                 # Completes 180 deg turn
-                if controller2.encoder.position in range(29750, 30250):
-                    controller2.encoder.zero()
-                    my_share.put(2)
-                    break
-
+                if controller2.encoder.position in range(27500, 28500):
+                    if turn_flag:
+                        timer = time.ticks_ms()
+                        turn_flag = 0
+                    print(f"timer = {timer}, {time.ticks_ms()}")
+                    if time.ticks_diff(time.ticks_ms(), timer) >= 5000:
+                        print("done with delay")
+                        controller2.encoder.zero()
+                        motor2.set_duty_cycle(0)
+                        my_share.put(2)
                 yield
-        case _: # IDLE STATE (S0)
-            pass
+            yield
+        else: # IDLE STATE (S0)
+            yield
 
 def get_coordinates(shares):
     """!
@@ -92,8 +100,8 @@ def get_coordinates(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
-    match my_share.get():
-        case 2: # GET COORDINATES STATE (S1)
+    while 1:
+        if my_share.get() == 2: # GET COORDINATES STATE (S1)
             max_val, max_row, max_col = 0, 0, 0
             row, col = 1, 1
 
@@ -120,13 +128,19 @@ def get_coordinates(shares):
                 col = 1
             print(f"val: {max_val}, row: {max_row}, col: {max_col}")
 
-            #math
-            controller1.set_setpoint(calculated_sp1)
-            controller2.set_setpoint(calculated_sp2)
+            x_dist = (max_row - 16) * 3
+            y_dist = (max_col - 12) * 3.7
+            
+            x_ticks = (atan(x_dist/180) * 60000) // (2 * pi)
+            y_ticks = (atan(y_dist/180) * 60000) // (2 * pi)
+            
+            print(f"x: {x_ticks}, y: {y_ticks}")
+#             controller1.set_setpoint(calculated_sp1)
+#             controller2.set_setpoint(calculated_sp2)
             my_share.put(3)
             yield
-        case _: # IDLE STATE (S0)
-            pass
+        else: # IDLE STATE (S0)
+            yield
 
 def fire_round(shares):
     """!
@@ -136,26 +150,27 @@ def fire_round(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
-    match my_share.get():
-        case 4: # SHOOT STATE (S1)
+    while 1:
+        if my_share.get() == 4: # SHOOT STATE (S1)
             trig_Pin.value(1)
             pyb.delay(500)
             trig_Pin.value(0)
 
             ## Reset motor flags to 0
             motor1_flag, motor2_flag = 0, 0
-        case 0: # IDLE STATE (S0)
-            pass
+            yield
+        else: # IDLE STATE (S0)
+            yield
 
 
 if __name__ == "__main__":
     ## Set kp and setpoints for controllers 1 (pitch) where kp = 1 and setpoint = 0
-    kp1, sp1 = 1, 0
+    kp1, sp1 = .8, 100000
 
     ## Set kp and setpoints for controllers 2 (yaw) where kp = 1 and setpoint = 32000 (180 deg turn)
-    kp2, sp2 = 1, 30000
+    kp2, sp2 = .8, 28000
 
-    ## Set motor flags to check if motors have reached positions
+    ## Set motor flags to check if motors have reached positions. Both set to 0
     motor1_flag, motor2_flag = 0, 0
 
     ## Create a share and a queue to test function and diagnostic printouts
@@ -190,9 +205,11 @@ if __name__ == "__main__":
 
     ## Create motor 1 object (pitch)
     motor1 = MotorDriver(Pin.board.PC1, Pin.board.PA0, Pin.board.PA1, 5)
+    motor1.set_duty_cycle(0)
 
     ## Create motor 2 object (yaw)
     motor2 = MotorDriver(Pin.board.PA10, Pin.board.PB4, Pin.board.PB5, 3)
+    motor2.set_duty_cycle(0)
 
     ## Create encoder 1 object (pitch)
     encoder1 = Encoder(Pin.board.PC6, Pin.board.PC7, 8)
@@ -206,25 +223,27 @@ if __name__ == "__main__":
     ## Once motor, encoder and params are collected they are used to create this controller 2 object (yaw)
     controller2 = Controller(kp2, sp2, motor2, encoder2)
 
-    # Put state number into shares. Initialized to state 1
-    share0.put(1)
+
 
     # Create the tasks. If trace is enabled for any task, memory will be
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-    task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=1, period=50,
+    task1 = cotask.Task(move_pitch_motor, name="Task_1", priority=3, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
+    task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=4, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task3 = cotask.Task(get_coordinates, name="Task_3", priority=4, period=50,
+    task3 = cotask.Task(get_coordinates, name="Task_3", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task4 = cotask.Task(fire_round, name="Task_4", priority=3, period=50,
+    task4 = cotask.Task(fire_round, name="Task_4", priority=1, period=50,
                         profile=True, trace=False, shares=(share0, q0))
     cotask.task_list.append(task1)
     cotask.task_list.append(task2)
     cotask.task_list.append(task3)
     cotask.task_list.append(task4)
+    
+    # Put state number into shares. Initialized to state 1
+    share0.put(1)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
