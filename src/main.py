@@ -131,8 +131,8 @@ def get_coordinates(shares):
             x_dist = (max_row - 16) * 3
             y_dist = (max_col - 12) * 3.7
             
-            x_ticks = (atan(x_dist/180) * 60000) // (2 * pi)
-            y_ticks = (atan(y_dist/180) * 528000) // (2 * pi)
+            x_ticks = int((atan(x_dist/180) * 60000) // (2 * pi))
+            y_ticks = int((atan(y_dist/180) * 528000) // (2 * pi))
             
             print(f"x: {x_ticks}, y: {y_ticks}")
             controller1.set_setpoint(y_ticks)
