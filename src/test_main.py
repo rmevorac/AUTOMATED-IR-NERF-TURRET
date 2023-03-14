@@ -28,9 +28,20 @@ def move_pitch_motor(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
-    while 1:
-        controller1.run()
-        yield
+    match my_share.get():
+        case 3: # MOVE STATE (S1)
+            while 1:
+                controller1.run()
+
+                if controller1.encoder.position in\
+                 range(controller1.encoder.setpoint - 250, controller1.encoder.setpoint + 250):
+                    motor1_flag = 1
+                    if motor2_flag:
+                        my_share.put(4)
+                        break
+                yield
+        case _: # IDLE STATE (S0)
+            pass
 
 def move_yaw_motor(shares):
     """!
@@ -47,44 +58,33 @@ def move_yaw_motor(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
-    while 1:
-        controller2.run()       
-        yield
+    match my_share.get():
+        case 3: # MOVE STATE (S1)
+            while 1:
+                controller2.run()
 
-def find_hotspot(shares):
-    """!
-    Task that gets x, y, and z acceleration from the accelerometer
-    @param shares A list holding the share and queue used by this task
-    """
-    # Get references to the share and queue which have been passed to this task
-    my_share, my_queue = shares
-    max_val, max_row, max_col = 0, 0, 0
-    row, col = 1, 1
+                if controller1.encoder.position in\
+                 range(controller1.encoder.setpoint - 250, controller1.encoder.setpoint + 250):
+                    motor2_flag = 1
+                    if motor1_flag:
+                        my_share.put(4)
+                        break
+                yield
+        case 1: # 180 TURN STATE (S2)
+            while 1:
+                controller2.run()
 
-    image = camera.get_image()
-    pix = camera.get_csv(image.pix, limits=(0, 99))
-    next(pix)
-#     print(f"MAX: {max_val}")
+                # Completes 180 deg turn
+                if controller2.encoder.position in range(29750, 30250):
+                    controller2.encoder.zero()
+                    my_share.put(2)
+                    break
 
-    while row < (NUM_PIXELS_ROW - 2):
-#         print(f"MAX: {max_val}") 
-        line = next(pix).split(",")
-#         print(line)
-        while col < (NUM_PIXELS_COL - 1):
-            if int(line[col]) > max_val:
-                avg = (int(line[col - 1]) + int(line[col]) + int(line[col + 1])) / 3
-                if avg > max_val:
-                    print(f"updated at {row}, {col} to value {avg}")
-                    max_val = avg
-                    max_row = row
-                    max_col = col
-            col += 1
-        row += 1
-        col = 1
-        #print(f"val: {max_val}, row: {max_row}, col: {max_col}")   
-    yield
+                yield
+        case _: # IDLE STATE (S0)
+            pass
 
-def do_calculations(shares):
+def get_coordinates(shares):
     """!
     Task that gets x, y, and z acceleration from the accelerometer
     @param shares A list holding the share and queue used by this task
@@ -92,6 +92,41 @@ def do_calculations(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
+    match my_share.get():
+        case 2: # GET COORDINATES STATE (S1)
+            max_val, max_row, max_col = 0, 0, 0
+            row, col = 1, 1
+
+            image = camera.get_image()
+            camera.ascii_image(image.pix)
+            pix = camera.get_csv(image.pix, limits=(0, 99))
+            next(pix)
+        #     print(f"MAX: {max_val}")
+
+            while row < (NUM_PIXELS_ROW - 2):
+        #         print(f"MAX: {max_val}") 
+                line = next(pix).split(",")
+        #         print(line)
+                while col < (NUM_PIXELS_COL - 1):
+                    if int(line[col]) > max_val:
+                        avg = (int(line[col - 1]) + int(line[col]) + int(line[col + 1])) / 3
+                        if avg > max_val:
+                            print(f"updated at {row}, {col} to value {avg}")
+                            max_val = avg
+                            max_row = row
+                            max_col = col
+                    col += 1
+                row += 1
+                col = 1
+            print(f"val: {max_val}, row: {max_row}, col: {max_col}")
+
+            #math
+            controller1.set_setpoint(calculated_sp1)
+            controller2.set_setpoint(calculated_sp2)
+            my_share.put(3)
+            yield
+        case _: # IDLE STATE (S0)
+            pass
 
 def fire_round(shares):
     """!
@@ -101,16 +136,33 @@ def fire_round(shares):
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
+    match my_share.get():
+        case 4: # SHOOT STATE (S1)
+            trig_Pin.value(1)
+            pyb.delay(500)
+            trig_Pin.value(0)
+
+            ## Reset motor flags to 0
+            motor1_flag, motor2_flag = 0, 0
+        case 0: # IDLE STATE (S0)
+            pass
+
 
 if __name__ == "__main__":
-    ## Set kp and setpoints for controller
-    kp1, sp1, kp2, sp2 = 1, -100000, 1, -5000
+    ## Set kp and setpoints for controllers 1 (pitch) where kp = 1 and setpoint = 0
+    kp1, sp1 = 1, 0
+
+    ## Set kp and setpoints for controllers 2 (yaw) where kp = 1 and setpoint = 32000 (180 deg turn)
+    kp2, sp2 = 1, 30000
+
+    ## Set motor flags to check if motors have reached positions
+    motor1_flag, motor2_flag = 0, 0
 
     ## Create a share and a queue to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
     q0 = task_share.Queue('h', 16, thread_protect=False, overwrite=False,
                           name="Queue 0")
-    
+
     # The following import is only used to check if we have an STM32 board such
     # as a Pyboard or Nucleo; if not, use a different library
     try:
@@ -133,16 +185,19 @@ if __name__ == "__main__":
     ## Create the camera object and set it up in default mode
     camera = MLX_Cam(i2c_bus)
 
-    ## The creation of the motor 1 object
+    ## Create pin for trigger fire
+    trig_Pin = Pin(Pin.board.PA4, Pin.OUT_PP)
+
+    ## Create motor 1 object (pitch)
     motor1 = MotorDriver(Pin.board.PC1, Pin.board.PA0, Pin.board.PA1, 5)
 
-    ## The creation of the motor 2 object
+    ## Create motor 2 object (yaw)
     motor2 = MotorDriver(Pin.board.PA10, Pin.board.PB4, Pin.board.PB5, 3)
 
-    ## The creation of the encoder 1 object
+    ## Create encoder 1 object (pitch)
     encoder1 = Encoder(Pin.board.PC6, Pin.board.PC7, 8)
     
-    ## The creation of the encoder 2 object
+    ## Create encoder 2 object (yaw)
     encoder2 = Encoder(Pin.board.PB6, Pin.board.PB7, 4)
 
     ## Once motor, encoder and params are collected they are used to create this controller 1 object (pitch)
@@ -150,6 +205,9 @@ if __name__ == "__main__":
 
     ## Once motor, encoder and params are collected they are used to create this controller 2 object (yaw)
     controller2 = Controller(kp2, sp2, motor2, encoder2)
+
+    # Put state number into shares. Initialized to state 1
+    share0.put(1)
 
     # Create the tasks. If trace is enabled for any task, memory will be
     # allocated for state transition tracing, and the application will run out
@@ -159,14 +217,14 @@ if __name__ == "__main__":
                         profile=True, trace=False, shares=(share0, q0))
     task2 = cotask.Task(move_yaw_motor, name="Task_2", priority=2, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task3 = cotask.Task(find_hotspot, name="Task_3", priority=2, period=50,
+    task3 = cotask.Task(get_coordinates, name="Task_3", priority=4, period=50,
                         profile=True, trace=False, shares=(share0, q0))
-    task4 = cotask.Task(do_calculations, name="Task_3", priority=2, period=50,
+    task4 = cotask.Task(fire_round, name="Task_4", priority=3, period=50,
                         profile=True, trace=False, shares=(share0, q0))
     cotask.task_list.append(task1)
     cotask.task_list.append(task2)
-    #cotask.task_list.append(task3)
-    #cotask.task_list.append(task4)
+    cotask.task_list.append(task3)
+    cotask.task_list.append(task4)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
