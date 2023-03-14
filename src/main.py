@@ -14,6 +14,20 @@ from mlx90640.mlx_cam import MLX_Cam
 NUM_PIXELS_COL = 32
 NUM_PIXELS_ROW = 24
 
+def button_press(pin):
+    try:
+        print("button pressed")
+        global button_count
+#         button_count += 1
+        if button_count:
+            button_count -= 1
+        else:
+            button_count += 1
+
+        print(f"button_count: {button_count}")
+    except:
+        pass
+
 def move_pitch_motor(shares):
     """!
     @brief      This function executes task1 by continuously checking if the controller1 has new data and,
@@ -33,12 +47,14 @@ def move_pitch_motor(shares):
         if my_share.get() == 3: # MOVE STATE (S1)
             while 1:
                 controller1.run()
+#                 print(f"p_p: {controller1.encoder.position}, sp_p: {controller1.setpoint}")
 
                 if controller1.encoder.position in\
-                 range(controller1.setpoint - 250, controller1.setpoint + 250):
-                    motor1_flag = 1
-                    if motor2_flag:
+                 range(controller1.setpoint - 10000, controller1.setpoint + 10000):
+#                     print("reached pitch")
+                    if my_queue.any():
                         my_share.put(4)
+                        break
                 yield
             yield
         else: # IDLE STATE (S0)
@@ -64,29 +80,32 @@ def move_yaw_motor(shares):
         if my_share.get() == 3: # MOVE STATE (S1)
             while 1:
                 controller2.run()
+#                 print(f"p_y: {controller2.encoder.position}, sp_y: {controller2.setpoint}")
 
-                if controller1.encoder.position in\
-                 range(controller1.setpoint - 250, controller1.setpoint + 250):        
-                    motor2_flag = 1
-                    if motor1_flag:
-                        my_share.put(4)
-                        
+                if controller2.encoder.position in\
+                 range(controller2.setpoint - 100, controller2.setpoint + 100):
+#                     print("reached yaw")
+                    if not my_queue.any():
+                        my_queue.put(1)
+                    break
                 yield
             yield
         elif my_share.get() == 1: # 180 TURN STATE (S2)
+            ## Start timer
+            timer = time.ticks_ms()
             while 1:
                 controller2.run()
                 # Completes 180 deg turn
-                if controller2.encoder.position in range(27500, 28500):
+                if controller2.encoder.position in range(29650, 30350):
                     if turn_flag:
-                        timer = time.ticks_ms()
                         turn_flag = 0
-                    print(f"timer = {timer}, {time.ticks_ms()}")
+#                     print(f"timer = {timer}, {time.ticks_ms()}")
                     if time.ticks_diff(time.ticks_ms(), timer) >= 5000:
-                        print("done with delay")
+#                         print("done with delay")
                         controller2.encoder.zero()
                         motor2.set_duty_cycle(0)
                         my_share.put(2)
+                        break
                 yield
             yield
         else: # IDLE STATE (S0)
@@ -106,7 +125,7 @@ def get_coordinates(shares):
             row, col = 1, 1
 
             image = camera.get_image()
-            camera.ascii_image(image.pix)
+#             camera.ascii_image(image.pix)
             pix = camera.get_csv(image.pix, limits=(0, 99))
             next(pix)
         #     print(f"MAX: {max_val}")
@@ -119,22 +138,25 @@ def get_coordinates(shares):
                     if int(line[col]) > max_val:
                         avg = (int(line[col - 1]) + int(line[col]) + int(line[col + 1])) / 3
                         if avg > max_val:
-                            print(f"updated at {row}, {col} to value {avg}")
+#                             print(f"updated at {row}, {col} to value {avg}")
                             max_val = avg
                             max_row = row
                             max_col = col
                     col += 1
                 row += 1
                 col = 1
-            print(f"val: {max_val}, row: {max_row}, col: {max_col}")
+#             print(f"val: {max_val}, row: {max_row}, col: {max_col}")
 
-            x_dist = (max_row - 16) * 3
-            y_dist = (max_col - 12) * 3.7
+            x_dist = (16 - max_col) * 2.8
+            y_dist = (12 - max_row) * 3.7
+#             print(f"x_dist: {x_dist}, y_dist: {y_dist}")
             
-            x_ticks = int((atan(x_dist/180) * 60000) // (2 * pi))
+            x_ticks = int((atan(x_dist/180) * 60000) // (2 * pi)) + 320
             y_ticks = int((atan(y_dist/180) * 528000) // (2 * pi))
             
-            print(f"x: {x_ticks}, y: {y_ticks}")
+#             print(f"x: {x_ticks}, y: {y_ticks}")
+            controller1.encoder.zero()
+            controller2.encoder.zero()
             controller1.set_setpoint(y_ticks)
             controller2.set_setpoint(x_ticks)
             my_share.put(3)
@@ -155,9 +177,13 @@ def fire_round(shares):
             trig_Pin.value(1)
             pyb.delay(500)
             trig_Pin.value(0)
-
-            ## Reset motor flags to 0
-            motor1_flag, motor2_flag = 0, 0
+#             print("bang")
+            motor1.set_duty_cycle(0)
+#             print("motor 1 shut off")
+            motor2.set_duty_cycle(0)
+#             print("motor 2 shut off")
+            my_queue.clear()
+            my_share.put(0)
             yield
         else: # IDLE STATE (S0)
             yield
@@ -165,13 +191,13 @@ def fire_round(shares):
 
 if __name__ == "__main__":
     ## Set kp and setpoints for controllers 1 (pitch) where kp = 1 and setpoint = 0
-    kp1, sp1 = .8, 100000
+    kp1, sp1 = 1, 0
 
     ## Set kp and setpoints for controllers 2 (yaw) where kp = 1 and setpoint = 32000 (180 deg turn)
-    kp2, sp2 = .8, 28000
-
-    ## Set motor flags to check if motors have reached positions. Both set to 0
-    motor1_flag, motor2_flag = 0, 0
+    kp2, sp2 = 1.5, 30000
+    
+    ## Create pin for trigger fire
+    trig_Pin = Pin(Pin.board.PA4, Pin.OUT_PP)
 
     ## Create a share and a queue to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
@@ -195,13 +221,10 @@ if __name__ == "__main__":
     ## Select MLX90640 camera I2C address, normally 0x33, and check the bus
     i2c_address = 0x33
     scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
-    print(f"I2C Scan: {scanhex}")
+#     print(f"I2C Scan: {scanhex}")
 
     ## Create the camera object and set it up in default mode
     camera = MLX_Cam(i2c_bus)
-
-    ## Create pin for trigger fire
-    trig_Pin = Pin(Pin.board.PA4, Pin.OUT_PP)
 
     ## Create motor 1 object (pitch)
     motor1 = MotorDriver(Pin.board.PC1, Pin.board.PA0, Pin.board.PA1, 5)
@@ -223,6 +246,12 @@ if __name__ == "__main__":
     ## Once motor, encoder and params are collected they are used to create this controller 2 object (yaw)
     controller2 = Controller(kp2, sp2, motor2, encoder2)
 
+    ## Initialize button_count to turn microcontroller on/off
+    global button_count
+    ## Set button_count to 0 (off)
+    button_count = 0
+    
+    button_pin = pyb.ExtInt(Pin.board.PC13, pyb.ExtInt.IRQ_FALLING, Pin.PULL_UP, button_press)
 
 
     # Create the tasks. If trace is enabled for any task, memory will be
@@ -251,14 +280,15 @@ if __name__ == "__main__":
 
     # Run the scheduler with the chosen scheduling algorithm. Quit if ^C pressed
     while True:
-        try:
-            cotask.task_list.pri_sched()
-        except KeyboardInterrupt:
-            motor1.set_duty_cycle(0)
-            print("motor 1 shut off")
-            motor2.set_duty_cycle(0)
-            print("motor 2 shut off")
-            break
+        if button_count:
+            try:
+                cotask.task_list.pri_sched()
+            except KeyboardInterrupt:
+                motor1.set_duty_cycle(0)
+#                 print("motor 1 shut off")
+                motor2.set_duty_cycle(0)
+#                 print("motor 2 shut off")
+                break
 
     # Print a table of task data and a table of shared information data
     print('\n' + str (cotask.task_list))
