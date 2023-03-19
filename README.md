@@ -1,6 +1,28 @@
 # ME-405-term-project
 # AUTOMATED IR NERF TURRET 
 
+## Introduction
+This projects goal was to design, construct and program a automated nerf turret that is capable of shooting a person 16 feet awya using an IR camera for signal detection. The firing conditions for this turret are a predetermined set of "deuling rules" specified in the following steps:
+
+1. The turret must start facing away from the intended target
+2. The turret will then roate 180 degrees to face the general area of the intended target
+3. The intended target will have 5 seconds to move around. by this point your turret is allowed to fire.
+4. After 5 seconds from the start of the duel the intended target must stand still for atleast 10 seconds.
+5. The turret can fire any amount of shot sduring either step 3 or 4. The scoring is based on if the opposing targets turret hit first, how many shots hit, and how many shots missed. 
+
+The turret is intended to be used exclusivley for the ME 405 Learn by Dueling Competition by the students who designed and programmed it and another other ME 405 students who wanted to try using the turret. 
+
+---
+
+# Turret Design
+
+## Hardware Design
+Our hardware design philisophy is based almost entirley around being compatible with the NERF gun we chose. For our turret we chose the NERF Ultra Select 2. An electronic firing mechanism and flywheel firing system where desirable as it made actuating the gun a pre-packaged operation. The only difficulty was the size of the gun made it difficult to design a fixture for. 
+
+## Software Design
+
+Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information:
+
 
 ---
 
