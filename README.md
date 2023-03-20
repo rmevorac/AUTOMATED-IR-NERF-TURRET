@@ -22,6 +22,20 @@ Our hardware design philisophy is based almost entirley around being compatible 
 ### General View:
 ![wide view](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/wideview.jpg)
 
+### Yaw Axis
+![yaw](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/yawmotor.jpg)
+
+### Pitch Axis
+![pitch](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/pitchmotor.jpg)
+
+### Gun Pivot
+![pivot](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/pivot.jpg)
+
+### Firing Access Modification
+![https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/firingmod.jpg]
+
+
+
 ## Software Design
 
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information:
