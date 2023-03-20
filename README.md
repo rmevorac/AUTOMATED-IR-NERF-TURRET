@@ -64,10 +64,16 @@ There was many things learned through this project and should be categorized int
 
 ### Dos:
 1.Use an eletrical firing system. Eletrical nerfguns are simply easier to actuate and shoot very effecitlvey. The pre-packaged design makes them easy to integrate into a turret.
+
 2.Supply power through a power supply rather than batteries, we are grateful that it reduced the weight of our gun and during its functional peroid it gave us very consistent firing results.
-3. Keep the tracking algorithim simple, we observed many people doing complex manipulation of the thermal array and have reduced accruacy than ours, just reading from the array keeps the processing light and provides highly reliable tracking.
-4. Consider non-backdrivable systems. While the high gear ratio lsows down your turning, we removed alot of backlash in our axis that had our worm-spline gear system.
-5. We added a physical hardstop on our guns base to help us zero the gun for every duel. 
+
+3.Keep the tracking algorithim simple, we observed many people doing complex manipulation of the thermal array and have reduced accruacy than ours, just reading from the array keeps the processing light and provides highly reliable tracking.
+
+4.Consider non-backdrivable systems. While the high gear ratio lsows down your turning, we removed alot of backlash in our axis that had our worm-spline gear system
+
+5.We added a physical hardstop on our guns base to help us zero the gun for every duel. 
+
+
 
 ### Donts:
 1. Do not rely on only 3D pritned components due to the fragility of them as tensile load bearing structures. Consider including wooden or metal components for thiss such as shafts.
