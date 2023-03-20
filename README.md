@@ -17,7 +17,7 @@ The turret is intended to be used exclusivley for the ME 405 Learn by Dueling Co
 # Turret Design
 
 ## Hardware Design
-Our hardware design philisophy is based almost entirley around being compatible with the NERF gun we chose. For our turret we chose the NERF Ultra Select 2. An electronic firing mechanism and flywheel firing system where desirable as it made actuating the gun a pre-packaged operation. The only difficulty was the size of the gun made it difficult to design a fixture for. 
+Our hardware design philisophy is based almost entirley around being compatible with the NERF gun we chose. For our turret we chose the NERF Ultra Select 2. An electronic firing mechanism and flywheel firing system where desirable as it made actuating the gun a pre-packaged operation. The only difficulty was the size of the gun made it difficult to design a fixture for. The design is outlined in [our CAD folder](https://github.com/rmevorac/ME-405-term-project/tree/main/SLDWRK).
 
 ## Software Design
 
