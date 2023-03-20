@@ -40,6 +40,11 @@ Our hardware design philisophy is based almost entirley around being compatible 
 In terms of electronic design, the modifications made to the gun is directly replacing the firing signal from a button within the NERF gun with a set of wires to allow external control of the firing mechanism. The second change was to soder longer power cables to the battery touchpoints in order to have the turret be able to be connected to the power supplies. A secondary part of our electronic design is that we ziptied the flywheel trigger down rather than seek a direct electrical control solution because we realized we would always want the flywheels on.
 
 ## Software Design
+Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism. Our Finite State diagrams and Task diagram are provided both here and in our doxygen.
+
+### Task Diagram
+
+### Finite State Diagrams
 
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information:
 
@@ -48,11 +53,26 @@ Our software design is provided in great detail on our doxygen gituhub.io page f
 
 # Project Outcome
 
-## Performance
+## Duel Day Performance
 Our turret reach ours sections finals, but in a dissapointing way. Its tracking was excellent and was able to easily follow the target, however a mysterious code gremlin popped into our design sometime during the 3 hous between the end of our all-nighter the night before and our designated dueling time. While we lost no points, we gain none either as we could noot shoot. No amount of good tracking will fix a gun that doesnt shoot. We are unsure why it worked the night before then refused to work during the duel and did attempt to discover why during the friday after the duels. We eventually determined that the issue was a mixture of too much current draw and a strange calibration issue with our on/saftey stop button code. Ultimatley, we where proud of how our gun functioned while it worked and regret it could not operate at is best during the dueling day.
 
+### Testing Results
+We tested similarly to how we would duel, the onlly difference is that the test subject did not have their own turret at the end of the table. We decided to test like this because we wanted to calibrate the turrets accuracy to the same conditions the duel would take palce in. during the calibration testing the night before, the turret was opperating very effectivley and was landing 5 hits for every 8 shots. We anticiapted a good performance on duel day assuming the turret would function the same. 
+
 ## What We Learned
-There was many things learned through this project and should be categorized into Mechanical, Eletrical and Software lessons.
+There was many things learned through this project and should be categorized into Mechanical, Eletrical and Software lessons. The brief summary for anyone attempting this project can be seen below in the Dos and Donts:
+
+### Dos:
+1.Use an eletrical firing system. Eletrical nerfguns are simply easier to actuate and shoot very effecitlvey. The pre-packaged design makes them easy to integrate into a turret.
+2.Supply power through a power supply rather than batteries, we are grateful that it reduced the weight of our gun and during its functional peroid it gave us very consistent firing results.
+3. Keep the tracking algorithim simple, we observed many people doing complex manipulation of the thermal array and have reduced accruacy than ours, just reading from the array keeps the processing light and provides highly reliable tracking.
+4. Consider non-backdrivable systems. While the high gear ratio lsows down your turning, we removed alot of backlash in our axis that had our worm-spline gear system.
+5. We added a physical hardstop on our guns base to help us zero the gun for every duel. 
+
+### Donts:
+1. Do not rely on only 3D pritned components due to the fragility of them as tensile load bearing structures. Consider including wooden or metal components for thiss such as shafts.
+2. Ensure that any custom eletric circuit system is as compatible as possible with the electronics within your NERF Gun as a lack of compatibility will cause misfires.
+3. Conduct thorough tests to ensure new code does not inhibit core functions and prioritize that rather than calibration testing. 
 
 ### Mechanical Lessons
 Most of our hardships where due to the heavy use of 3D printed parts. We originally designed our system to have pulleys fixed onto 3D printed shafts, however we soon realized why thats a problem. All our parts where experencing stress perpendicular to the plane of printing which caused layer seperation and broke our shafts and bearing mounts off. This was remedied in two ways. The layer seperation on our bearing mounts was fixed with the help of Thomas Taylor who advised on a printing strategy that would change the direction of the print layer and increase strucutral rigidity through brass inserts. We are very grateful for his assistance concerning this part and his advice has helped all of us become more competent designers for 3D printing. For the shafts, thier snapping was remedied differently depending on the axis. For the yaw shaft, a generous amount of plastic bonder cement was applied with the snapped shaft and pulley to the original base. For the pitch shaft, the system was replaced with the worm gear-spline gear winch mechanism which opperated with much less backlash than the original pulley system. Overall the lesson here is do not trust 3D printing on its own for structural applications, it should be combined with additional components and be put in compression rather than tensile loads.
@@ -66,7 +86,7 @@ Our software side learning was the most mild as all the previous tools such as o
 
 ---
 
-# Original Description
+# Original Description and additional files
 
 We are intending to make a 2 axis turret equipped with an electronic nerf launcher. The goal is to use a medium sized motor likely one of the tub motors for horizontal panning and either a more powerful motor we purchased online or a dual tub motor gearbox. We are likely going to 3D print most of the superstructural pieces and manufacture components like the trigger mechanism. The goal is to get the gun to land the first shot. We are confident on our electric gun choice but unsure on the motor selection.
 
