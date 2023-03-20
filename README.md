@@ -32,9 +32,12 @@ Our hardware design philisophy is based almost entirley around being compatible 
 ![pivot](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/pivot.jpg)
 
 ### Firing Access Modification
-![https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/firingmod.jpg]
+![fireaccess](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/firingmod.jpg)
 
 
+
+### Electronic Design
+In terms of electronic design, the modifications made to the gun is directly replacing the firing signal from a button within the NERF gun with a set of wires to allow external control of the firing mechanism. The second change was to soder longer power cables to the battery touchpoints in order to have the turret be able to be connected to the power supplies. A secondary part of our electronic design is that we ziptied the flywheel trigger down rather than seek a direct electrical control solution because we realized we would always want the flywheels on.
 
 ## Software Design
 
