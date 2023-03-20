@@ -1,5 +1,5 @@
 # ME-405-term-project
-# AUTOMATED IR NERF TURRET 
+# AUTOMATED IR NERF TURRET MECHA 20
 
 ## Introduction
 This projects goal was to design, construct and program a automated nerf turret that is capable of shooting a person 16 feet awya using an IR camera for signal detection. The firing conditions for this turret are a predetermined set of "deuling rules" specified in the following steps:
