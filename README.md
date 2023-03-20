@@ -43,9 +43,10 @@ In terms of electronic design, the modifications made to the gun is directly rep
 Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism. Our Finite State diagrams and Task diagram are provided both here and in our doxygen.
 
 ### Task Diagram
-
+![task](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/task.jpg)
 ### Finite State Diagrams
-
+![fsm12](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/fsm1and2.jpg)
+![fsm34](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/fsm3and4.jpg)
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information:
 
 
