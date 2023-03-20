@@ -61,7 +61,9 @@ Most of our hardships where due to the heavy use of 3D printed parts. We origina
 The eletrical side of our turret seemed to work fine up until our last moments, wherein we suspect it to possibly be part of our firing issue. The turret's firign mechanism is a simple circuit with the two firing wires sending a shoot signal when shorted. The circuit itself had a mossfet which was used to ope nand close the connection. This was the extent of the circuit we had, which leads us to believe that we possibly needed to investigate our eletrical circuit much more thoroughly to ensure we would not have misfires as one of our members believes that current leakage may of been our issue or that our microcontroller could not provide enough current because the gate capacitance was too large.
 
 ### Software Lessons
+
 Our software side learning was the most mild as all the previous tools such as our motor controller and camera components where easy to implement. We decided to go with a simple but effective scanning method with our camera wherein we simply checked every cell and its neighbors. The cell with the highest combined value of itself and its neighbors had its row and column stored and we did that for the entire thermal camera array. This system provided us good tracking results after some calibration. Our biggest coding hump was trying to implement a system that allowed us to use the blue user button on the microcontroller to start and stop the turret. We first where having issues with our ExtInt system throwing errors which was due to improper naming conventions within our code and then had trouble implmenting it into our code. We ended up putting each of our tasks in a while loop that depended on the button's boolean being set in order to function, this gave use essentially a pause button functionality on our turret.
+
 ---
 
 # Original Description
