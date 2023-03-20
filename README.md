@@ -49,9 +49,17 @@ Our software design is provided in great detail on our doxygen gituhub.io page f
 # Project Outcome
 
 ## Performance
+Our turret reach ours sections finals, but in a dissapointing way. Its tracking was excellent and was able to easily follow the target, however a mysterious code gremlin popped into our design sometime during the 3 hous between the end of our all-nighter the night before and our designated dueling time. While we lost no points, we gain none either as we could noot shoot. No amount of good tracking will fix a gun that doesnt shoot. We are unsure why it worked the night before then refused to work during the duel and did attempt to discover why during the friday after the duels. We eventually determined that the issue was a mixture of too much current draw and a strange calibration issue with our on/saftey stop button code. Ultimatley, we where proud of how our gun functioned while it worked and regret it could not operate at is best during the dueling day.
 
 ## What We Learned
+There was many things learned through this project and should be categorized into Mechanical, Eletrical and Software lessons.
 
+### Mechanical Lessons
+Most of our hardships where due to the heavy use of 3D printed parts. We originally designed our system to ahve pulleys fixed onto 3D printed shafts, however we soon realized why thats a problem. All our parts where experincing stress perpendicular to the plane of printing which caused layer seperation and broke our shafts and bearing mounts off. This was remedied in two ways. The layer seperation on our bearing mounts was fixed with the help of Thomas Taylor who advised on a printing strategy that would change the direction of the print layer and increase strucutral rigidity through brass inserts. We are very grateful for his assistance concerning this part and his advice has helped all of us become mroe competent designers for 3D printing. For the shafts, thier snapping was remedied in two ways. For the yaw shaft, a generous amount of plastic bonder cement was applied to the snapped shaft and pulley to the original base. For the pitch shaft, the system wa sreplace with the worm gear-spline gear winch mechanism which opperated with much less backlash than the original pulley system.
+
+### Eletrical Lessons
+
+### Software Lessons
 
 ---
 
