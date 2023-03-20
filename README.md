@@ -26,6 +26,17 @@ Our software design is provided in great detail on our doxygen gituhub.io page f
 
 ---
 
+# Project Outcome
+
+## Performance
+
+## What We Learned
+
+
+---
+
+# Original Description
+
 We are intending to make a 2 axis turret equipped with an electronic nerf launcher. The goal is to use a medium sized motor likely one of the tub motors for horizontal panning and either a more powerful motor we purchased online or a dual tub motor gearbox. We are likely going to 3D print most of the superstructural pieces and manufacture components like the trigger mechanism. The goal is to get the gun to land the first shot. We are confident on our electric gun choice but unsure on the motor selection.
 
 Motors: 
