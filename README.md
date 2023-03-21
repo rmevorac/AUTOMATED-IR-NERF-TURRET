@@ -49,7 +49,7 @@ Our software design is based on a cooperative multitasking design around 4 tasks
 ### Finite State Diagrams
 ![fsm12](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/fsm1and2.jpg)
 ![fsm34](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/fsm3and4.jpg)
-Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information:
+Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
 
 
 ---
