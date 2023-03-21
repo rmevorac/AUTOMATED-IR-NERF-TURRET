@@ -53,7 +53,14 @@ Our hardware design philisophy is based almost entirley around being compatible 
 In terms of electronic design, the modifications made to the gun is directly replacing the firing signal from a button within the NERF gun with a set of wires to allow external control of the firing mechanism. The second change was to soder longer power cables to the battery touchpoints in order to have the turret be able to be connected to the power supplies. A secondary part of our electronic design is that we ziptied the flywheel trigger down rather than seek a direct electrical control solution because we realized we would always want the flywheels on.
 
 ## Software Design
-Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism. Our Finite State diagrams and Task diagram are provided both here and in our doxygen.
+Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism.
+
+Our code implements a cooperative multitasking scheduler using the cotask and task_share modules. Tasks are defined as functions, and they yield control back to the scheduler using the yield statement. The scheduler then runs the next task until it yields or completes. Shared data between tasks is managed using shared variables provided by the task_share module. Overall, the code is running several tasks concurrently and using shared variables to communicate between them, allowing for cooperative multitasking.
+
+Our main program defines four tasks, two of which control the movement of the pitch and yaw motors. The program begins once the user button on the microcontroller is pressed. The system then begins its first task, which turns the gun around by 180 degrees. The system then waits for 5 seconds and moves to the next task. The next task uses the image produced by the IR camera to obtain the coordinates of the target (hottest pixel). These coordinates are then converted to ticks using simple geometry and other calculations, and are set as the motors' new setpoints. The motors then run until they reach the range of that setpoint. Once both motors are in position,
+the final task is triggered, which fires the NERF gun.
+
+Our Finite State diagrams and Task diagram are provided both here and in our doxygen. Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
 
 ### Task Diagram:
 <div align='center'>
@@ -65,7 +72,6 @@ Our software design is based on a cooperative multitasking design around 4 tasks
 <img src="CodeDiagrams/fsm1and2.jpg" alt="fsm1and2" height="550"> <img src="CodeDiagrams/fsm3and4.jpg" alt="fsm3and4" height="550">
 </div>
 
-Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
 
 
 ---

@@ -5,7 +5,7 @@
     an image to obtain the coordinates of the target. The system is activated/paused by pressing
     the user button on the microcontroller.
 
-    The system implements a cooperative multitasking scheduler using the cotask and task_share modules.
+    This program implements a cooperative multitasking scheduler using the cotask and task_share modules.
     Tasks are defined as functions, and they yield control back to the scheduler using the yield statement.
     The scheduler then runs the next task until it yields or completes. Shared data between tasks is
     managed using shared variables provided by the task_share module. Overall, the code is running several
