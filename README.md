@@ -5,7 +5,7 @@
 ### by: Ben Elkayam, Ermias Yemane, Roey Mevorach
 
 ## Introduction
-This projects goal was to design, construct and program a automated nerf turret that is capable of shooting a person 16 feet awya using an IR camera for signal detection. The firing conditions for this turret are a predetermined set of "deuling rules" specified in the following steps:
+This projects goal was to design, construct and program a automated nerf turret that is capable of shooting a person 16 feet awya using an IR camera for signal detection. The firing conditions for this turret are a predetermined set of "dueling rules" specified in the following steps:
 
 1. The turret must start facing away from the intended target
 2. The turret will then roate 180 degrees to face the general area of the intended target
