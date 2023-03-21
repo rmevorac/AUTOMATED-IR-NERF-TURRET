@@ -115,7 +115,7 @@ Pin&#160;</td><td class="memItemRight" valign="bottom"><b>main.trig_pin</b> = Pi
 <tr class="memdesc:a295f9ce3fdea8fb64223ed7dfc2d67b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create pin for trigger fire. <br /></td></tr>
 <tr class="separator:a295f9ce3fdea8fb64223ed7dfc2d67b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ebd9bb4d62bde9a647a803917e0e434"><td class="memItemLeft" align="right" valign="top"><a id="a3ebd9bb4d62bde9a647a803917e0e434" name="a3ebd9bb4d62bde9a647a803917e0e434"></a>
-task_share&#160;</td><td class="memItemRight" valign="bottom"><b>main.share0</b> = task_share.Share('h', thread_protect=False, name=&quot;Share 0&quot;)</td></tr>
+task_share&#160;</td><td class="memItemRight" valign="bottom"><b>main.share0</b> = <a class="el" href="classtask__share_1_1_share.html">task_share.Share</a>('h', thread_protect=False, name=&quot;Share 0&quot;)</td></tr>
 <tr class="memdesc:a3ebd9bb4d62bde9a647a803917e0e434"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a share to test function and diagnostic printouts. <br /></td></tr>
 <tr class="separator:a3ebd9bb4d62bde9a647a803917e0e434"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae956baf22be01b82f8f5cc7ffc167d69"><td class="memItemLeft" align="right" valign="top">task_share&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8py.html#ae956baf22be01b82f8f5cc7ffc167d69">main.q0</a></td></tr>
@@ -373,8 +373,9 @@ Ermias Yemane</dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  task_share.Queue(<span class="stringliteral">&#39;h&#39;</span>, 16, thread_protect=<span class="keyword">False</span>, overwrite=<span class="keyword">False</span>,</div>
+<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  <a class="code hl_class" href="classtask__share_1_1_queue.html">task_share.Queue</a>(<span class="stringliteral">&#39;h&#39;</span>, 16, thread_protect=<span class="keyword">False</span>, overwrite=<span class="keyword">False</span>,</div>
 <div class="line"><span class="lineno">    2</span>                          name=<span class="stringliteral">&quot;Queue 0&quot;</span>)</div>
+<div class="ttc" id="aclasstask__share_1_1_queue_html"><div class="ttname"><a href="classtask__share_1_1_queue.html">task_share.Queue</a></div><div class="ttdoc">A queue which is used to transfer data from one task to another.</div><div class="ttdef"><b>Definition:</b> task_share.py:80</div></div>
 </div><!-- fragment -->
 <p>Create a queue to test function and diagnostic printouts. </p>
 
@@ -391,8 +392,9 @@ Ermias Yemane</dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  cotask.Task(move_pitch_motor, name=<span class="stringliteral">&quot;Task_1&quot;</span>, priority=3, period=50,</div>
+<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  <a class="code hl_class" href="classcotask_1_1_task.html">cotask.Task</a>(move_pitch_motor, name=<span class="stringliteral">&quot;Task_1&quot;</span>, priority=3, period=50,</div>
 <div class="line"><span class="lineno">    2</span>                        profile=<span class="keyword">True</span>, trace=<span class="keyword">False</span>, shares=(share0, q0))</div>
+<div class="ttc" id="aclasscotask_1_1_task_html"><div class="ttname"><a href="classcotask_1_1_task.html">cotask.Task</a></div><div class="ttdoc">Implements multitasking with scheduling and some performance logging.</div><div class="ttdef"><b>Definition:</b> cotask.py:33</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -407,7 +409,7 @@ Ermias Yemane</dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  cotask.Task(move_yaw_motor, name=<span class="stringliteral">&quot;Task_2&quot;</span>, priority=4, period=50,</div>
+<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  <a class="code hl_class" href="classcotask_1_1_task.html">cotask.Task</a>(move_yaw_motor, name=<span class="stringliteral">&quot;Task_2&quot;</span>, priority=4, period=50,</div>
 <div class="line"><span class="lineno">    2</span>                        profile=<span class="keyword">True</span>, trace=<span class="keyword">False</span>, shares=(share0, q0))</div>
 </div><!-- fragment -->
 </div>
@@ -423,7 +425,7 @@ Ermias Yemane</dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  cotask.Task(get_coordinates, name=<span class="stringliteral">&quot;Task_3&quot;</span>, priority=2, period=50,</div>
+<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  <a class="code hl_class" href="classcotask_1_1_task.html">cotask.Task</a>(get_coordinates, name=<span class="stringliteral">&quot;Task_3&quot;</span>, priority=2, period=50,</div>
 <div class="line"><span class="lineno">    2</span>                        profile=<span class="keyword">True</span>, trace=<span class="keyword">False</span>, shares=(share0, q0))</div>
 </div><!-- fragment -->
 </div>
@@ -439,7 +441,7 @@ Ermias Yemane</dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  cotask.Task(fire_round, name=<span class="stringliteral">&quot;Task_4&quot;</span>, priority=1, period=50,</div>
+<b>Initial value:</b><div class="fragment"><div class="line"><span class="lineno">    1</span>=  <a class="code hl_class" href="classcotask_1_1_task.html">cotask.Task</a>(fire_round, name=<span class="stringliteral">&quot;Task_4&quot;</span>, priority=1, period=50,</div>
 <div class="line"><span class="lineno">    2</span>                        profile=<span class="keyword">True</span>, trace=<span class="keyword">False</span>, shares=(share0, q0))</div>
 </div><!-- fragment -->
 </div>
