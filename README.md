@@ -22,19 +22,19 @@ The turret is intended to be used exclusivley for the ME 405 Learn by Dueling Co
 Our hardware design philisophy is based almost entirley around being compatible with the NERF gun we chose. For our turret we chose the NERF Ultra Select 2. An electronic firing mechanism and flywheel firing system where desirable as it made actuating the gun a pre-packaged operation. The only difficulty was the size of the gun made it difficult to design a fixture for. The design is outlined in [our CAD folder](https://github.com/rmevorac/ME-405-term-project/tree/main/SLDWRK). The 3 important design attributes of our final turret design are the yaw axis, the pitch axis, and the fixture. The yaw axis is composed of a lazy susan that sits on 4 legs conencting to the bottom half, and a pivot with a shaft coming through the middle of bearing downards which sits on the top. The yaw axis is driven by the 405 kot motors through a 400mm belt and a 3.75:1 torque pulley ratio. The pivot which composes the pitch axis as was designed around a set of 30mm bearing found within the ME 405 lab. The pivot piece which the large black 3D printed object, was printed with the assistance and guidance of Thomas Mcklay Taylor, another ME 405 student. The pitch axis is driven by a worm gear to spline gear system with an approximate gear ratio of 11:1 as to not be easily backdrivable. This drives a winch system that raises and lowers the gun. The pivot is attached to the final component set which is known as the gun clamp. This is a two piece mechanism which both acts as the shaft for which the gun pivots around and the mechanism which keeps the gun secured to the turret. Photos of the general design are provided below:
 
 ### General View:
-![wide view](TurretPics/wideview.jpg)
+![wide view](docs/TurretPics/wideview.jpg)
 
 ### Yaw Axis
-![yaw](TurretPics/yawmotor.jpg)
+![yaw](docs/TurretPics/yawmotor.jpg)
 
 ### Pitch Axis
-![pitch](TurretPics/pitchmotor.jpg)
+![pitch](docs/TurretPics/pitchmotor.jpg)
 
 ### Gun Pivot
-![pivot](TurretPics/pivot.jpg)
+![pivot](docs/TurretPics/pivot.jpg)
 
 ### Firing Access Modification
-![fireaccess](TurretPics/firingmod.jpg)
+![fireaccess](docs/TurretPics/firingmod.jpg)
 
 
 
@@ -45,10 +45,10 @@ In terms of electronic design, the modifications made to the gun is directly rep
 Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism. Our Finite State diagrams and Task diagram are provided both here and in our doxygen.
 
 ### Task Diagram
-![task](CodeDiagrams/Taskdiagram.jpg)
+![task](docs/CodeDiagrams/Taskdiagram.jpg)
 ### Finite State Diagrams
-![fsm12](CodeDiagrams/fsm1and2.jpg)
-![fsm34](CodeDiagrams/fsm3and4.jpg)
+![fsm12](docs/CodeDiagrams/fsm1and2.jpg)
+![fsm34](docs/CodeDiagrams/fsm3and4.jpg)
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
 
 
