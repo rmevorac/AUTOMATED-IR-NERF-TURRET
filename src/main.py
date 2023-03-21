@@ -1,3 +1,47 @@
+"""!
+@file main.py
+    This code is for a control system that moves a NERF gun to a specific set of angles using
+    two motors: a pitch and yaw motor. The system includes a IR camera (MLX90640), which produces
+    an image to obtain the coordinates of the target. The system is activated/paused by pressing
+    the user button on the microcontroller.
+
+    The system implements a cooperative multitasking scheduler using the cotask and task_share modules.
+    Tasks are defined as functions, and they yield control back to the scheduler using the yield statement.
+    The scheduler then runs the next task until it yields or completes. Shared data between tasks is
+    managed using shared variables provided by the task_share module. Overall, the code is running several
+    tasks concurrently and using shared variables to communicate between them, allowing for cooperative multitasking.
+
+    This program defines four tasks, two of which control the movement of the pitch and yaw motors. The program
+    begins once the user button on the microcontroller is pressed. The system then begins its first task, which
+    turns the gun around by 180 degrees. The system then waits for 5 seconds and moves to the next task. The next task
+    uses the image produced by the IR camera to obtain the coordinates of the target (hottest pixel). These
+    coordinates are then converted to ticks using simple geometry and other calculations, and are set as the motors'
+    new setpoints. The motors then run until they reach the range of that setpoint. Once both motors are in position,
+    the final task is triggered, which fires the NERF gun.
+
+
+@author Ben Elkayam
+@author Roey Mevorach
+@author Ermias Yemane
+
+@date   2023-Mar-20
+"""
+"""!
+@package pyb                Contains all micro controller tools we use.
+@package gc                 Contains a garbage collector tool.
+@package utime              Contains functions for getting the current time and date, measuring
+                            time intervals, and for delays.
+@package machine            Contains specific functions related to the hardware on a particular board.
+@package math               Contains mathematical functions.
+
+@package cotask             Contains the class to run cooperatively scheduled tasks in amultitasking system.
+@package task_share         Contains the class that allows tasks to share data without the risk
+                            of data corruption by interrupts.
+@package encoder_reader     Contains our encoder driver class and data.
+@package motor_driver       Contains our motor driver class that interfaces with the encoder.
+@package controller         Contains our controller class which combines the motor and encode classes.
+@package mlx_cam            Contains a wrapper class for accessing and using the IR camera (MLX90640)
+"""
 import pyb
 import gc
 import utime as time
@@ -15,28 +59,39 @@ NUM_PIXELS_COL = 32
 NUM_PIXELS_ROW = 24
 
 def button_press(pin):
+    """!
+    @brief      This is the callback function that is called when the interrupt
+                is triggered when the user button is pressed
+    @details    This function is called when the user button on the microcontroller
+                is pressed. The global variable button_count starts at 0. It is then
+                incremented to 1 when the button is pressed for the first time, allowing
+                the program to run. When the button is pressed again, button_count is
+                then decremented back to zero, which halts the program.
+    @param      pin The pin on which to enable the interrupt
+    @return     None
+    """
     try:
         print("button pressed")
         global button_count
-#         button_count += 1
+
         if button_count:
             button_count -= 1
         else:
             button_count += 1
 
-        print(f"button_count: {button_count}")
     except:
         pass
 
 def move_pitch_motor(shares):
     """!
-    @brief      This function executes task1 by continuously checking if the controller1 has new data and,
-                if so, writing it to the u2 share.
-    @details    The function takes in a tuple of two shares, one for the `my_share` and one for the `my_queue`.
-                It then enters a while loop that runs indefinitely, checking if the `controller1.run()` method
-                returns `True` and, if so, writing the first and second elements of `controller1.motor_data`
-                to the `u2` share. If a KeyboardInterrupt is raised, the motor is shut off and the loop is broken.
-                The function yields control after each iteration of the loop.
+    @brief      This task moves the pitch motor until it reaches its setpoint.
+    @details    This task has 2 states: IDLE (S0) and MOVING (S1). When this task is
+                in S0, the pitch motor is idle. When this task is in S1, the pitch
+                motor continuously runs and checks its position against its setpoint.
+                When the position is within 10000 ticks of its setpoint, it checks
+                if the yaw motor has reached its position. If my_queue has any items
+                in it, then the yaw motor has reached its position and the system 
+                transitions to the next task (firing a shot).
     @param      shares A tuple of two shares, one for `my_share` and one for `my_queue`.
     @return     None
     """
@@ -51,7 +106,7 @@ def move_pitch_motor(shares):
 
                 if controller1.encoder.position in\
                  range(controller1.setpoint - 10000, controller1.setpoint + 10000):
-#                     print("reached pitch")
+                    print("reached pitch")
                     if my_queue.any():
                         my_share.put(4)
                         break
@@ -62,19 +117,21 @@ def move_pitch_motor(shares):
 
 def move_yaw_motor(shares):
     """!
-    @brief      This function executes task2 by continuously checking if the controller2 has new data and,
-                if so, writing it to the u2 share.
-    @details    The function takes in a tuple of two shares, one for the `my_share` and one for the `my_queue`.
-                It then enters a while loop that runs indefinitely, checking if the `controller2.run()` method
-                returns `True` and, if so, writing the first and second elements of `controller2.motor_data`
-                to the `u2` share. If a KeyboardInterrupt is raised, the motor is shut off and the loop is broken.
-                The function yields control after each iteration of the loop.
+    @brief      This task moves the yaw motor until it reaches its setpoint.
+    @details    This task has 3 states: IDLE (S0), MOVING (S1), and 180 TURN (S2).
+                When this task is in S0, the yaw motor is idle. When this task is
+                in S1, the yaw motor continuously runs and checks its position
+                against its setpoint. When the position is within 100 ticks of its
+                setpoint, it puts 1 in my_queue, which lets the pitch motor know that
+                it has reached its position. When this task is in S2, a timer
+                starts and then the yaw motor runs until it has completed a 180 deg
+                turn. Once 5 seconds have past, the system transitions to the next task
+                (getting the coordinates for the hotspot from the IR Cam input)
     @param      shares A tuple of two shares, one for `my_share` and one for `my_queue`.
     @return     None
     """
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
-    turn_flag = 1
 
     while 1:
         if my_share.get() == 3: # MOVE STATE (S1)
@@ -84,7 +141,7 @@ def move_yaw_motor(shares):
 
                 if controller2.encoder.position in\
                  range(controller2.setpoint - 100, controller2.setpoint + 100):
-#                     print("reached yaw")
+                    print("reached yaw")
                     if not my_queue.any():
                         my_queue.put(1)
                     break
@@ -97,11 +154,9 @@ def move_yaw_motor(shares):
                 controller2.run()
                 # Completes 180 deg turn
                 if controller2.encoder.position in range(29650, 30350):
-                    if turn_flag:
-                        turn_flag = 0
 #                     print(f"timer = {timer}, {time.ticks_ms()}")
                     if time.ticks_diff(time.ticks_ms(), timer) >= 5000:
-#                         print("done with delay")
+                        print("done with delay")
                         controller2.encoder.zero()
                         motor2.set_duty_cycle(0)
                         my_share.put(2)
@@ -113,8 +168,16 @@ def move_yaw_motor(shares):
 
 def get_coordinates(shares):
     """!
-    Task that gets x, y, and z acceleration from the accelerometer
-    @param shares A list holding the share and queue used by this task
+    @brief      Get the coordinates of the maximum value in the camera image.
+    @details    This task has 2 states: IDLE (S0) and GET COORDINATES (S1).
+                When this task is in S0, the task does nothing. When this task
+                is in S1, this task retrieves the camera image, processes it, and calculates
+                the coordinates of the pixel with the maximum value. It then converts
+                these coordinates to distance and ticks, and sends them to the pitch and yaw
+                motor controllers. Once those values are sent, the transitions to the
+                next task (move motors).
+    @param      shares A tuple of two shares, one for `my_share` and one for `my_queue`.
+    @return     None
     """
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
@@ -166,18 +229,25 @@ def get_coordinates(shares):
 
 def fire_round(shares):
     """!
-    Task that gets x, y, and z acceleration from the accelerometer
-    @param shares A list holding the share and queue used by this task
+    @brief      Get the coordinates of the maximum value in the camera image.
+    @details    This task has 2 states: IDLE (S0) and GET COORDINATES (S1).
+                When this task is in S0, the task does nothing. When this task
+                is in S1, this task initiates the shooting procedure by setting
+                the logic level of the trig_pin to high for 500 ms. This is the
+                time it takes for the gun to fire one shot. This task then turns
+                off the motors and transitions the system to the an idle state.
+    @param      shares A tuple of two shares, one for `my_share` and one for `my_queue`.
+    @return     None
     """
     # Get references to the share and queue which have been passed to this task
     my_share, my_queue = shares
 
     while 1:
         if my_share.get() == 4: # SHOOT STATE (S1)
-            trig_Pin.value(1)
+            trig_pin.value(1)
             pyb.delay(500)
-            trig_Pin.value(0)
-#             print("bang")
+            trig_pin.value(0)
+            print("bang")
             motor1.set_duty_cycle(0)
 #             print("motor 1 shut off")
             motor2.set_duty_cycle(0)
@@ -197,10 +267,12 @@ if __name__ == "__main__":
     kp2, sp2 = 1.5, 30000
     
     ## Create pin for trigger fire
-    trig_Pin = Pin(Pin.board.PA4, Pin.OUT_PP)
+    trig_pin = Pin(Pin.board.PA4, Pin.OUT_PP)
 
-    ## Create a share and a queue to test function and diagnostic printouts
+    ## Create a share to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
+
+    ## Create a queue to test function and diagnostic printouts
     q0 = task_share.Queue('h', 16, thread_protect=False, overwrite=False,
                           name="Queue 0")
 
@@ -248,9 +320,11 @@ if __name__ == "__main__":
 
     ## Initialize button_count to turn microcontroller on/off
     global button_count
+
     ## Set button_count to 0 (off)
     button_count = 0
-    
+
+    ## Set up the interrupt pin for when a button is pressed. Pressing the button starts/stops the system
     button_pin = pyb.ExtInt(Pin.board.PC13, pyb.ExtInt.IRQ_FALLING, Pin.PULL_UP, button_press)
 
 

@@ -16,9 +16,6 @@ To use this code, upload the directory @c mlx90640 from mwerezak with all its
 contents to the root directory of your MicroPython device, then copy this file
 to the root directory of the MicroPython device.
 
-There's some test code at the bottom of this file which serves as a beginning
-example.
-
 @author mwerezak Original files, Summer 2022
 @author JR Ridgely Added simplified wrapper class @c MLX_Cam, January 2023
 @copyright (c) 2022 by the authors and released under the GNU Public License,

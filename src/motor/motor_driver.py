@@ -18,15 +18,15 @@ from pyb import Pin as Pin
 # Blue (channel B) leads for clockwise
 
 class MotorDriver:
-    '''!
+    """!
     @brief      This class is used to control a motor using the Pyboard and its pins.
     @details    The class initializes the pins for the enable, input 1, and input 2 pins of the motor.
                 It also initializes a timer for PWM control of the motor. The class provides a function
                 to set the duty cycle of the PWM signal applied to the motor to control its speed.
-    '''
+    """
 
     def __init__ (self, en_pin, in1pin, in2pin, timer_num):
-        '''!
+        """!
         @brief      Constructor method for MotorDriver class
         @details    The constructor method initializes a MotorDriver object with the given enable pin (en_pin), 
                     input 1 pin (in1pin), input 2 pin (in2pin), and timer number (timer_num). It sets the specified 
@@ -38,7 +38,7 @@ class MotorDriver:
         @param      in2pin Pin number for the input 2 pin
         @param      timer_num Timer number
         @return     None
-        '''
+        """
         ## Sets up the in1pin for the motor to be push-pull
         pin1 = Pin(in1pin, Pin.OUT_PP)
         ## Sets up the in2pin for the motor to be push-pull
@@ -51,7 +51,7 @@ class MotorDriver:
         print("Creating a motor driver")
 
     def set_duty_cycle (self, level):
-        '''!
+        """!
         @brief      This method sets the duty cycle of the PWM signal that drives the motor.
         @details    The duty cycle is set based on the level parameter. If the level is negative, the duty cycle of
                     the PWM signal to channel 1 of the motor is set to -1 times the level, and the duty cycle of the
@@ -61,7 +61,7 @@ class MotorDriver:
         @param      self The object itself
         @param      level The duty cycle of the PWM signal as a percentage (-100 to 100).
         @return     None
-        '''
+        """
         self.pin_en.value(1)
 
         if level < 0:
