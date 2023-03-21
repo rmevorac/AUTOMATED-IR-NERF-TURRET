@@ -24,27 +24,27 @@ Our hardware design philisophy is based almost entirley around being compatible 
 
 ### General View:
 <div align='center'>
-<img src="docs/TurretPics/wideview.jpg" alt="wide view" height="550">
+<img src="TurretPics/wideview.jpg" alt="wide view" height="550">
 </div>
 
 ### Yaw Axis:
 <div align='center'>
-<img src="docs/TurretPics/yawmotor.jpg" alt="yaw" height="550">
+<img src="TurretPics/yawmotor.jpg" alt="yaw" height="550">
 </div>
 
 ### Pitch Axis:
 <div align='center'>
-<img src="docs/TurretPics/pitchmotor.jpg" alt="pitch" height="550">
+<img src="TurretPics/pitchmotor.jpg" alt="pitch" height="550">
 </div>
 
 ### Gun Pivot:
 <div align='center'>
-<img src="docs/TurretPics/pivot.jpg" alt="pivot" height="550">
+<img src="TurretPics/pivot.jpg" alt="pivot" height="550">
 </div>
 
 ### Firing Access Modification:
 <div align='center'>
-<img src="docs/TurretPics/firingmod.jpg" alt="fireaccess" height="550">
+<img src="TurretPics/firingmod.jpg" alt="fireaccess" height="550">
 </div>
 
 
@@ -57,12 +57,12 @@ Our software design is based on a cooperative multitasking design around 4 tasks
 
 ### Task Diagram:
 <div align='center'>
-<img src="docs/CodeDiagrams/Taskdiagram.jpg" alt="task" height="550">
+<img src="CodeDiagrams/Taskdiagram.jpg" alt="task" height="550">
 </div>
 
 ### Finite State Diagrams:
 <div align='center'>
-<img src="docs/CodeDiagrams/fsm1and2.jpg" alt="fsm1and2" height="550"> <img src="docs/CodeDiagrams/fsm3and4.jpg" alt="fsm3and4" height="550">
+<img src="CodeDiagrams/fsm1and2.jpg" alt="fsm1and2" height="550"> <img src="CodeDiagrams/fsm3and4.jpg" alt="fsm3and4" height="550">
 </div>
 
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
