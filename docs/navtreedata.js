@@ -25,7 +25,7 @@
 var NAVTREE =
 [
   [ "Shot GPT", "index.html", [
-    [ "ME-405-term-project", "index.html", "index" ],
+    [ "Project Report", "index.html", "index" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
