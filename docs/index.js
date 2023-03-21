@@ -6,15 +6,15 @@ var index =
     [ "Turret Design", "index.html#autotoc_md5", [
       [ "Hardware Design", "index.html#autotoc_md6", [
         [ "General View:", "index.html#autotoc_md7", null ],
-        [ "Yaw Axis", "index.html#autotoc_md8", null ],
-        [ "Pitch Axis", "index.html#autotoc_md9", null ],
-        [ "Gun Pivot", "index.html#autotoc_md10", null ],
-        [ "Firing Access Modification", "index.html#autotoc_md11", null ],
+        [ "Yaw Axis:", "index.html#autotoc_md8", null ],
+        [ "Pitch Axis:", "index.html#autotoc_md9", null ],
+        [ "Gun Pivot:", "index.html#autotoc_md10", null ],
+        [ "Firing Access Modification:", "index.html#autotoc_md11", null ],
         [ "Electronic Design", "index.html#autotoc_md12", null ]
       ] ],
       [ "Software Design", "index.html#autotoc_md13", [
-        [ "Task Diagram", "index.html#autotoc_md14", null ],
-        [ "Finite State Diagrams", "index.html#autotoc_md15", null ]
+        [ "Task Diagram:", "index.html#autotoc_md14", null ],
+        [ "Finite State Diagrams:", "index.html#autotoc_md15", null ]
       ] ]
     ] ],
     [ "Project Outcome", "index.html#autotoc_md17", [
