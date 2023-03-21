@@ -22,19 +22,29 @@ The turret is intended to be used exclusivley for the ME 405 Learn by Dueling Co
 Our hardware design philisophy is based almost entirley around being compatible with the NERF gun we chose. For our turret we chose the NERF Ultra Select 2. An electronic firing mechanism and flywheel firing system where desirable as it made actuating the gun a pre-packaged operation. The only difficulty was the size of the gun made it difficult to design a fixture for. The design is outlined in [our CAD folder](https://github.com/rmevorac/ME-405-term-project/tree/main/SLDWRK). The 3 important design attributes of our final turret design are the yaw axis, the pitch axis, and the fixture. The yaw axis is composed of a lazy susan that sits on 4 legs conencting to the bottom half, and a pivot with a shaft coming through the middle of bearing downards which sits on the top. The yaw axis is driven by the 405 kot motors through a 400mm belt and a 3.75:1 torque pulley ratio. The pivot which composes the pitch axis as was designed around a set of 30mm bearing found within the ME 405 lab. The pivot piece which the large black 3D printed object, was printed with the assistance and guidance of Thomas Mcklay Taylor, another ME 405 student. The pitch axis is driven by a worm gear to spline gear system with an approximate gear ratio of 11:1 as to not be easily backdrivable. This drives a winch system that raises and lowers the gun. The pivot is attached to the final component set which is known as the gun clamp. This is a two piece mechanism which both acts as the shaft for which the gun pivots around and the mechanism which keeps the gun secured to the turret. Photos of the general design are provided below:
 
 ### General View:
-![wide view](TurretPics/wideview.jpg)
+<div align='center'>
+<img src="docs/TurretPics/wideview.jpg" alt="wide view" height="550">
+</div>
 
-### Yaw Axis
-![yaw](TurretPics/yawmotor.jpg)
+### Yaw Axis:
+<div align='center'>
+<img src="docs/TurretPics/yawmotor.jpg" alt="yaw" height="550">
+</div>
 
-### Pitch Axis
-![pitch](TurretPics/pitchmotor.jpg)
+### Pitch Axis:
+<div align='center'>
+<img src="docs/TurretPics/pitchmotor.jpg" alt="pitch" height="550">
+</div>
 
-### Gun Pivot
-![pivot](TurretPics/pivot.jpg)
+### Gun Pivot:
+<div align='center'>
+<img src="docs/TurretPics/pivot.jpg" alt="pivot" height="550">
+</div>
 
-### Firing Access Modification
-![fireaccess](TurretPics/firingmod.jpg)
+### Firing Access Modification:
+<div align='center'>
+<img src="docs/TurretPics/firingmod.jpg" alt="fireaccess" height="550">
+</div>
 
 
 
@@ -44,11 +54,16 @@ In terms of electronic design, the modifications made to the gun is directly rep
 ## Software Design
 Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism. Our Finite State diagrams and Task diagram are provided both here and in our doxygen.
 
-### Task Diagram
-![task](CodeDiagrams/Taskdiagram.jpg)
-### Finite State Diagrams
-![fsm12](CodeDiagrams/fsm1and2.jpg)
-![fsm34](CodeDiagrams/fsm3and4.jpg)
+### Task Diagram:
+<div align='center'>
+<img src="docs/CodeDiagrams/Taskdiagram.jpg" alt="task" height="550">
+</div>
+
+### Finite State Diagrams:
+<div align='center'>
+<img src="docs/CodeDiagrams/fsm1and2.jpg" alt="fsm1and2" height="550"> <img src="docs/CodeDiagrams/fsm3and4.jpg" alt="fsm3and4" height="550">
+</div>
+
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
 
 
@@ -125,9 +140,11 @@ Nerf Ultra Select Gun - $51
 
 
 Task Diagram:
-![TDV1](https://user-images.githubusercontent.com/56085595/222069197-0ed7baf2-8def-4cf4-a6a4-fca194ef7bc9.jpg)
+<div align='center'>
+<img src="https://user-images.githubusercontent.com/56085595/222069197-0ed7baf2-8def-4cf4-a6a4-fca194ef7bc9.jpg" alt="TDV1" height="550">
+</div>
 
 FSM:
-![FSMV1](https://user-images.githubusercontent.com/56085595/222069215-9171dbce-964f-4f7f-9de4-17c2358491e7.jpg)
-
-
+<div align='center'>
+<img src="https://user-images.githubusercontent.com/56085595/222069215-9171dbce-964f-4f7f-9de4-17c2358491e7.jpg" alt="FSMV1" height="550">
+</div>
