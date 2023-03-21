@@ -28,13 +28,13 @@ Our hardware design philisophy is based almost entirley around being compatible 
 ![yaw](TurretPics/yawmotor.jpg)
 
 ### Pitch Axis
-![pitch](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/pitchmotor.jpg)
+![pitch](TurretPics/pitchmotor.jpg)
 
 ### Gun Pivot
-![pivot](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/pivot.jpg)
+![pivot](TurretPics/pivot.jpg)
 
 ### Firing Access Modification
-![fireaccess](https://github.com/rmevorac/ME-405-term-project/blob/main/TurretPics/firingmod.jpg)
+![fireaccess](TurretPics/firingmod.jpg)
 
 
 
@@ -45,10 +45,10 @@ In terms of electronic design, the modifications made to the gun is directly rep
 Our software design is based on a cooperative multitasking design around 4 tasks. These tasks are our pitch motor, yaw motor, target acquisition, and firing mechanism. Our Finite State diagrams and Task diagram are provided both here and in our doxygen.
 
 ### Task Diagram
-![task](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/Taskdiagram.jpg)
+![task](CodeDiagrams/Taskdiagram.jpg)
 ### Finite State Diagrams
-![fsm12](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/fsm1and2.jpg)
-![fsm34](https://github.com/rmevorac/ME-405-term-project/blob/main/CodeDiagrams/fsm3and4.jpg)
+![fsm12](CodeDiagrams/fsm1and2.jpg)
+![fsm34](CodeDiagrams/fsm3and4.jpg)
 Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
 
 
