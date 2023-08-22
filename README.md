@@ -60,7 +60,7 @@ Our code implements a cooperative multitasking scheduler using the cotask and ta
 Our main program defines four tasks, two of which control the movement of the pitch and yaw motors. The program begins once the user button on the microcontroller is pressed. The system then begins its first task, which turns the gun around by 180 degrees. The system then waits for 5 seconds and moves to the next task. The next task uses the image produced by the IR camera to obtain the coordinates of the target (hottest pixel). These coordinates are then converted to ticks using simple geometry and other calculations, and are set as the motors' new setpoints. The motors then run until they reach the range of that setpoint. Once both motors are in position,
 the final task is triggered, which fires the NERF gun.
 
-Our Finite State diagrams and Task diagram are provided both here and in our doxygen. Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/ME-405-term-project/
+Our Finite State diagrams and Task diagram are provided both here and in our doxygen. Our software design is provided in great detail on our doxygen gituhub.io page for this project, please refer to the link below for more detailed information: https://rmevorac.github.io/AUTOMATED-IR-NERF-TURRET/index.html
 
 ### Task Diagram:
 <div align='center'>
